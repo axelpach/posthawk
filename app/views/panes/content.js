@@ -289,6 +289,12 @@ class Content extends PaneBase {
 
     this.initFilters();
 
+    setTimeout(() => {
+      if (this.filterField && this.filterField[0]) {
+        this.filterField[0].focus();
+      }
+    }, 100);
+
     this.footer = this.content.find('.summary-and-pages');
 
     this.initFooterResize();
@@ -457,11 +463,6 @@ class Content extends PaneBase {
 
       GenericTable.setSelected(genericTable);
       genericTable.setSelectedRow(el);
-    });
-
-    table.single_double_click_nowait(null, event => {
-      var el = event.target.tagName == 'TD' ? event.target : $u(event.target).closest('td')[0];
-      this.editField(el);
     });
 
     var contextMenuActions = {

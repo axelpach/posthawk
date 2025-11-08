@@ -79,7 +79,7 @@ class DbScreen {
   }
 
   listen (event, callback) {
-    
+
   }
 
   fetchDbList (callback /*:: ?: () => void */) {
@@ -184,7 +184,7 @@ class DbScreen {
     } else if (['structure', 'content', 'info'].includes(this.view.currentTab)) {
       return this.view.showTab(this.view.currentTab);
     } else {
-      return this.view.showTab('structure');
+      return this.view.showTab('content');
     }
   }
 

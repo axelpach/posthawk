@@ -24,11 +24,34 @@ var template /*: Electron.MenuItemConstructorOptions[] */ = [
         }
       },
       {
-        label: 'New Connection',
+        label: 'Connection Tab',
         click: () => {
           global.App.activateLoginTab();
         },
+        accelerator: 'CmdOrCtrl+Shift+t'
+      },
+      {
+        label: 'Table Switcher',
+        click: () => {
+          const currentTab = global.App.currentTab;
+          if (currentTab && currentTab.instance && currentTab.instance.constructor.name === 'DbScreen') {
+            new Dialog.TableSwitcher(currentTab.instance);
+          }
+        },
         accelerator: 'CmdOrCtrl+t'
+      },
+      {
+        label: 'New Tab (Same Connection)',
+        click: () => {
+          const currentTab = global.App.currentTab;
+          if (currentTab && currentTab.instance && currentTab.instance.constructor.name === 'DbScreen') {
+            const dbScreen = currentTab.instance;
+            const connectionOptions = dbScreen.connection.options;
+            const connectionName = connectionOptions.tab_name || connectionOptions.host || 'DB';
+            global.App.openConnection(connectionOptions, connectionName);
+          }
+        },
+        accelerator: 'CmdOrCtrl+n'
       }
     ]
   },

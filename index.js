@@ -110,6 +110,19 @@ $(document).ready(function() {
     importer.showImportDialog();
   });
 
+  window.Mousetrap.stopCallback = function(e, element, combo) {
+    if (element.classList && element.classList.contains('mousetrap')) {
+      return false;
+    }
+
+    if (combo.includes('mod+') || combo.includes('command+') || combo.includes('ctrl+')) {
+      return false;
+    }
+
+    return element.tagName == 'INPUT' || element.tagName == 'SELECT' || element.tagName == 'TEXTAREA' ||
+           (element.contentEditable && element.contentEditable == 'true');
+  };
+
   window.Mousetrap.bind("down", function () {
     GenericTable.keyPressed('down');
     return false;
@@ -134,6 +147,25 @@ $(document).ready(function() {
       return false;
     });
   }
+
+  window.Mousetrap.bind("mod+t", function () {
+    const currentTab = global.App.currentTab;
+    if (currentTab && currentTab.instance && currentTab.instance.constructor.name === 'DbScreen') {
+      new Dialog.TableSwitcher(currentTab.instance);
+    }
+    return false;
+  });
+
+  window.Mousetrap.bind("mod+n", function () {
+    const currentTab = global.App.currentTab;
+    if (currentTab && currentTab.instance && currentTab.instance.constructor.name === 'DbScreen') {
+      const dbScreen = currentTab.instance;
+      const connectionOptions = dbScreen.connection.options;
+      const connectionName = connectionOptions.tab_name || connectionOptions.host || 'DB';
+      global.App.openConnection(connectionOptions, connectionName);
+    }
+    return false;
+  });
 
   electron.ipcRenderer.on('Snippet.insert', function(event, message) {
     console.log('Snippet.insert', event, message);

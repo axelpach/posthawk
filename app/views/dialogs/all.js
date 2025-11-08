@@ -20,4 +20,5 @@ module.exports = {
   ShowSql:          require('./show_sql'),
   UserGrants:       require('./user_grants'),
   ConnectionList:   require('./connection_list'),
+  TableSwitcher:    require('./table_switcher'),
 };
