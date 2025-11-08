@@ -124,6 +124,17 @@ $(document).ready(function() {
     GenericTable.keyPressed('backspace');
   });
 
+  for (let i = 1; i <= 9; i++) {
+    window.Mousetrap.bind(`mod+${i}`, function () {
+      console.log(`Pressed mod+${i}`, global.App.tabs.length, i);
+      const tabIndex = i - 1;
+      if (tabIndex >= 0 && tabIndex < global.App.tabs.length) {
+        global.App.activateTab(tabIndex);
+      }
+      return false;
+    });
+  }
+
   electron.ipcRenderer.on('Snippet.insert', function(event, message) {
     console.log('Snippet.insert', event, message);
     Pane.Content.insertSnippet(message);

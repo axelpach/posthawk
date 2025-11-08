@@ -111,7 +111,7 @@ global.App = {
   },
 
   addTab: function (name, contentHtml, instance) {
-    var tree = DOMinate([ 'div.tab', name, ['a$close.close', '']]);
+    var tree = DOMinate([ 'div.tab', name, ['span$shortcut.tab-shortcut', ''], ['a$close.close', '']]);
     $u(this.tabsContainer).prepend(tree[0]);
 
     var contentTree = DOMinate([ 'div.tabContent' ]);
@@ -129,6 +129,7 @@ global.App = {
       name: name,
       tabHandler: $u(tree[0]),
       content: $u(contentTree[0]),
+      shortcutElement: $u(tree.shortcut),
       is_active: false,
       activate: () => {
         if (App.tabs.indexOf(tabData) == -1) {
@@ -151,7 +152,21 @@ global.App = {
       App.closeTab(App.tabs.indexOf(tabData));
     });
 
+    this.updateTabShortcuts();
+
     return tabData;
+  },
+
+  updateTabShortcuts: function () {
+    this.tabs.forEach((tab, index) => {
+      const shortcutNumber = index + 1;
+      if (shortcutNumber <= 9) {
+        tab.shortcutElement.text(`⌘${shortcutNumber}`);
+        tab.shortcutElement.show();
+      } else {
+        tab.shortcutElement.hide();
+      }
+    });
   },
 
   closeTab: function(index) {
@@ -175,6 +190,8 @@ global.App = {
     } else if (this.activeTab > index) {
       this.activeTab -= 1;
     }
+
+    this.updateTabShortcuts();
   },
 
   closeCurrentTab: function () {

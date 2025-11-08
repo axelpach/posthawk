@@ -155,15 +155,15 @@ input, textarea {
   top: -200px;
 }
 
+#tabs > * {
+  display: inline-block;
+  vertical-align: top;
+}
 #tabs {
   background-color: #e7e6e5;
   overflow: hidden;
   box-shadow: inset 0px 2px 2px rgba(0, 0, 0, 0.15);
   position: relative;
-}
-#tabs > * {
-  display: inline-block;
-  vertical-align: top;
 }
 #tabs:after {
   content: "";
@@ -189,6 +189,15 @@ input, textarea {
   border-bottom: none;
   position: relative;
   border-right: 1px solid #d5d4d3;
+}
+#tabs .tab .tab-shortcut {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 10px;
+  color: #9b9b9b;
+  opacity: 0.7;
+  pointer-events: none;
 }
 #tabs .tab .close {
   position: absolute;
@@ -230,6 +239,9 @@ input, textarea {
 }
 #tabs .tab:hover .close {
   display: inline-block;
+}
+#tabs .tab:hover .tab-shortcut {
+  display: none;
 }
 #tabs .tab.active {
   color: #4A4A4A;
@@ -1594,10 +1606,6 @@ body.sidebar-resizing * {
   overflow: hidden;
   white-space: nowrap;
 }
-.window-content.content table tr td {
-  min-width: 23px;
-  max-width: 250px;
-}
 .window-content.content table tr td:not(.expanded) {
   text-overflow: ellipsis;
   -o-text-overflow: ellipsis;
@@ -1608,6 +1616,10 @@ body.sidebar-resizing * {
 .window-content.content table tr td.expanded {
   word-break: break-all;
   white-space: pre-wrap;
+}
+.window-content.content table tr td {
+  min-width: 23px;
+  max-width: 250px;
 }
 .window-content.content table tr td span.text {
   width: 100%;
@@ -1853,7 +1865,6 @@ body.snippets {
   top: 0;
   left: 0;
   vertical-align: top;
-  overflow-y: auto;
 }
 .snippets-window > ul > li {
   padding: 2px 8px 2px 8px;
@@ -1862,6 +1873,9 @@ body.snippets {
 .snippets-window > ul > li.selected {
   background: #2065d9;
   color: white;
+}
+.snippets-window > ul {
+  overflow-y: auto;
 }
 .snippets-window > ul > li {
   padding-left: 12px;
