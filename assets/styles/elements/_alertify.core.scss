@@ -68,6 +68,14 @@
   width: 550px;
   margin-left: -275px;
   opacity: 1;
+
+  &.table-switcher-dialog {
+    -webkit-transition-duration: 0s !important;
+    -moz-transition-duration: 0s !important;
+    -ms-transition-duration: 0s !important;
+    -o-transition-duration: 0s !important;
+    transition-duration: 0s !important;
+  }
 }
 
 .alertify-hidden {
