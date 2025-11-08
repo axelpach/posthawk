@@ -1,10 +1,10 @@
 {
-  "name": "postbird",
+  "name": "posthawk",
   "main": "main.js",
-  "version": "0.8.4",
-  "repository": "https://github.com/Paxa/postbird",
+  "version": "0.8.5",
+  "repository": "https://github.com/axelpach/posthawk",
   "license": "MIT",
-  "description": "Postbird is a cross-platform PostgreSQL GUI client, written in JavaScript, runs with Electron",
+  "description": "PostHawk - A keyboard-first PostgreSQL GUI client (fork of Postbird)",
   "scripts": {
     "sass": "sass assets/styles/style.scss public/style.css --watch",
     "test": "electron-mocha tests/ --renderer --require-main main.js",
@@ -17,10 +17,16 @@
     "lint": "eslint ."
   },
   "author": {
-    "name": "Pavel Evstigneev",
-    "email": "pavel.evst@gmail.com",
-    "url": "https://github.com/Paxa"
+    "name": "Axel Pacheco Tellez",
+    "url": "https://github.com/axelpach"
   },
+  "contributors": [
+    {
+      "name": "Pavel Evstigneev",
+      "email": "pavel.evst@gmail.com",
+      "url": "https://github.com/Paxa"
+    }
+  ],
   "devDependencies": {
     "@types/alertify": "^0.3.30",
     "@types/jquery": "^3.5.3",
