@@ -102,6 +102,10 @@ class DbScreen {
     this.currentTable = null;
     this.currentSchema = null;
 
+    if (this.connectionName) {
+      App.updateTabTitle(this, this.connectionName);
+    }
+
     if (this.currentTab != 'query') {
       this.activateTab(this.currentTab, 'force');
     }
@@ -179,12 +183,63 @@ class DbScreen {
 
     this.view.setSelected(schema, tableName);
 
+    if (this.connectionName) {
+      App.updateTabTitle(this, tableName);
+    }
+
     if (showTab) {
       return this.view.showTab(showTab);
     } else if (['structure', 'content', 'info'].includes(this.view.currentTab)) {
       return this.view.showTab(this.view.currentTab);
     } else {
       return this.view.showTab('content');
+    }
+  }
+
+  getAllTablesFlat () {
+    const tables = [];
+    const tableNodes = this.view.tablesList.find('li[table-name]');
+
+    tableNodes.forEach(node => {
+      const tableName = node.getAttribute('table-name');
+      const schemaNode = $u(node).closest('li[schema-name]')[0];
+      const schemaName = schemaNode ? schemaNode.getAttribute('schema-name') : 'public';
+
+      tables.push({
+        schema: schemaName,
+        name: tableName,
+        node: node
+      });
+    });
+
+    return tables;
+  }
+
+  navigateToNextTable () {
+    if (!this.currentTable) return;
+
+    const tables = this.getAllTablesFlat();
+    const currentIndex = tables.findIndex(t =>
+      t.schema === this.currentSchema && t.name === this.currentTable
+    );
+
+    if (currentIndex !== -1 && currentIndex < tables.length - 1) {
+      const nextTable = tables[currentIndex + 1];
+      this.tableSelected(nextTable.schema, nextTable.name);
+    }
+  }
+
+  navigateToPreviousTable () {
+    if (!this.currentTable) return;
+
+    const tables = this.getAllTablesFlat();
+    const currentIndex = tables.findIndex(t =>
+      t.schema === this.currentSchema && t.name === this.currentTable
+    );
+
+    if (currentIndex > 0) {
+      const prevTable = tables[currentIndex - 1];
+      this.tableSelected(prevTable.schema, prevTable.name);
     }
   }
 
@@ -204,6 +259,9 @@ class DbScreen {
 
   async extensionsTabActivate () {
     App.startLoading(`Getting extensions list`);
+    if (this.connectionName) {
+      App.updateTabTitle(this, this.connectionName);
+    }
     try {
       var result = await this.connection.getExtensions()
       this.view.extensionsPane.renderTab(result.rows);
@@ -296,12 +354,18 @@ class DbScreen {
   }
 
   queryTabActivate () {
+    if (this.connectionName) {
+      App.updateTabTitle(this, this.connectionName);
+    }
     this.view.queryPane.renderTab();
     this.currentTab = 'query';
   }
 
   async usersTabActivate () {
     App.startLoading(`Getting users list...`);
+    if (this.connectionName) {
+      App.updateTabTitle(this, this.connectionName);
+    }
     try {
       var users = await Model.User.findAll();
       this.view.usersPane.renderTab(users);
@@ -445,6 +509,9 @@ class DbScreen {
       if (this.currentTable == tableName && this.currentSchema == schema) {
         this.currentTable = null;
         this.currentSchema = null;
+        if (this.connectionName) {
+          App.updateTabTitle(this, this.connectionName);
+        }
         if (this.currentTab != 'query') {
           this.activateTab(this.currentTab, 'force');
         }
@@ -554,6 +621,9 @@ class DbScreen {
   }
 
   proceduresTabActivate () {
+    if (this.connectionName) {
+      App.updateTabTitle(this, this.connectionName);
+    }
     this.view.proceduresPane.renderTab(() => {
       this.currentTab = 'procedures';
     });

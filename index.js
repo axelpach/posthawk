@@ -115,8 +115,16 @@ $(document).ready(function() {
       return false;
     }
 
+    if (combo.includes('shift+') && (combo.includes('mod+') || combo.includes('command+') || combo.includes('ctrl+'))) {
+      return false;
+    }
+
     if (combo.includes('mod+') || combo.includes('command+') || combo.includes('ctrl+')) {
       return false;
+    }
+
+    if (element.tagName == 'SELECT' && (combo === 'up' || combo === 'down')) {
+      return true;
     }
 
     return element.tagName == 'INPUT' || element.tagName == 'SELECT' || element.tagName == 'TEXTAREA' ||
@@ -137,16 +145,21 @@ $(document).ready(function() {
     GenericTable.keyPressed('backspace');
   });
 
-  for (let i = 1; i <= 9; i++) {
-    window.Mousetrap.bind(`mod+${i}`, function () {
-      console.log(`Pressed mod+${i}`, global.App.tabs.length, i);
-      const tabIndex = i - 1;
+  document.addEventListener('keydown', function(e) {
+    const isMod = e.metaKey || e.ctrlKey;
+
+    if (isMod && e.key >= '1' && e.key <= '9') {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      const tabIndex = parseInt(e.key) - 1;
       if (tabIndex >= 0 && tabIndex < global.App.tabs.length) {
         global.App.activateTab(tabIndex);
       }
       return false;
-    });
-  }
+    }
+  }, true);
 
   window.Mousetrap.bind("mod+t", function () {
     const currentTab = global.App.currentTab;
@@ -166,6 +179,45 @@ $(document).ready(function() {
     }
     return false;
   });
+
+  document.addEventListener('keydown', function(e) {
+    const isMod = e.metaKey || e.ctrlKey;
+    const isShift = e.shiftKey;
+
+    if (isMod && isShift && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      const currentTab = global.App.currentTab;
+      if (currentTab && currentTab.instance && currentTab.instance.constructor.name === 'DbScreen') {
+        if (e.key === 'ArrowDown') {
+          currentTab.instance.navigateToNextTable();
+        } else if (e.key === 'ArrowUp') {
+          currentTab.instance.navigateToPreviousTable();
+        }
+      }
+      return false;
+    }
+
+    if (isMod && isShift && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      const currentIndex = global.App.activeTab;
+      if (currentIndex !== null) {
+        if (e.key === 'ArrowRight') {
+          const nextIndex = currentIndex < global.App.tabs.length - 1 ? currentIndex + 1 : 0;
+          global.App.activateTab(nextIndex);
+        } else if (e.key === 'ArrowLeft') {
+          const prevIndex = currentIndex > 0 ? currentIndex - 1 : global.App.tabs.length - 1;
+          global.App.activateTab(prevIndex);
+        }
+      }
+      return false;
+    }
+  }, true);
 
   electron.ipcRenderer.on('Snippet.insert', function(event, message) {
     console.log('Snippet.insert', event, message);

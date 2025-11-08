@@ -111,7 +111,7 @@ global.App = {
   },
 
   addTab: function (name, contentHtml, instance) {
-    var tree = DOMinate([ 'div.tab', name, ['span$shortcut.tab-shortcut', ''], ['a$close.close', '']]);
+    var tree = DOMinate([ 'div.tab', ['span$colorDot.tab-color-dot'], ['span$text.tab-text', name], ['span$shortcut.tab-shortcut', ''], ['a$close.close', '']]);
     $u(this.tabsContainer).prepend(tree[0]);
 
     var contentTree = DOMinate([ 'div.tabContent' ]);
@@ -129,6 +129,8 @@ global.App = {
       name: name,
       tabHandler: $u(tree[0]),
       content: $u(contentTree[0]),
+      colorDotElement: $u(tree.colorDot),
+      textElement: $u(tree.text),
       shortcutElement: $u(tree.shortcut),
       is_active: false,
       activate: () => {
@@ -138,6 +140,8 @@ global.App = {
         App.activateTab(App.tabs.indexOf(tabData));
       }
     };
+
+    tabData.textElement.attr('title', name);
 
     this.tabs.unshift(tabData);
     if (this.activeTab !== null) this.activeTab += 1;
@@ -155,6 +159,39 @@ global.App = {
     this.updateTabShortcuts();
 
     return tabData;
+  },
+
+  updateTabTitle: function(instance, title) {
+    const tab = this.tabs.find(t => t.instance === instance);
+    if (tab) {
+      tab.textElement.text(title);
+      tab.textElement.attr('title', title);
+    }
+  },
+
+  getConnectionColor: function(connectionKey) {
+    const colors = [
+      '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+      '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52B788',
+      '#FF9FF3', '#54A0FF', '#FF6348', '#1DD1A1', '#FFC312'
+    ];
+
+    if (!window.localStorage.connectionColors) {
+      window.localStorage.connectionColors = JSON.stringify({});
+    }
+
+    const colorMap = JSON.parse(window.localStorage.connectionColors);
+
+    if (!colorMap[connectionKey]) {
+      const usedColors = Object.values(colorMap);
+      const availableColors = colors.filter(c => !usedColors.includes(c));
+      colorMap[connectionKey] = availableColors.length > 0
+        ? availableColors[Math.floor(Math.random() * availableColors.length)]
+        : colors[Math.floor(Math.random() * colors.length)];
+      window.localStorage.connectionColors = JSON.stringify(colorMap);
+    }
+
+    return colorMap[connectionKey];
   },
 
   updateTabShortcuts: function () {
@@ -240,18 +277,29 @@ global.App = {
     this.loginScreen = new LoginScreen(this.cliConnectString);
     var tab = this.addTab('Connection', this.loginScreen.content, this.loginScreen);
     tab.tabHandler.find('.close').hide();
+    tab.colorDotElement.hide();
     return tab;
   },
 
   addDbScreen: function(connection, connectionName, options) {
     if (connectionName == '') connectionName = false;
     var dbs = new DbScreen(connection, options);
-    return this.addTab(connectionName || 'DB', dbs.view.content, dbs);
+    dbs.connectionName = connectionName || 'DB';
+
+    const connectionKey = `${connection.options.host || 'localhost'}:${connection.options.port || '5432'}/${connection.options.database || 'postgres'}`;
+    dbs.connectionColor = this.getConnectionColor(connectionKey);
+
+    const tab = this.addTab(dbs.connectionName, dbs.view.content, dbs);
+    tab.colorDotElement.css('background-color', dbs.connectionColor);
+
+    return tab;
   },
 
   addHelpScreen: function() {
     this.helpScreen = new HelpScreen();
-    return this.addTab('Help', this.helpScreen.content, this.helpScreen);
+    var tab = this.addTab('Help', this.helpScreen.content, this.helpScreen);
+    tab.colorDotElement.hide();
+    return tab;
   },
 
   helpScreenOpen: function () {

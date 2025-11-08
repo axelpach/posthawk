@@ -135,7 +135,20 @@ class LoginScreen {
     this.savedConnections = Model.SavedConn.savedConnections();
 
     ObjectKit.forEach(this.savedConnections, (name, params) => {
-      var line = $dom(['li', {'data-auto-connect': params.auto_connect, 'data-name': name}, name]);
+      const connectionKey = this.getConnectionKey(params);
+      const color = App.getConnectionColor(connectionKey);
+
+      var line = $dom(['li', {'data-auto-connect': params.auto_connect, 'data-name': name},
+        ['span.connection-color-dot', {'data-connection-key': connectionKey, 'style': `background-color: ${color}`}],
+        ['span.connection-name', name]
+      ]);
+
+      var colorDot = $u(line).find('.connection-color-dot')[0];
+
+      $u(colorDot).bind('click', (e) => {
+        e.stopPropagation();
+        this.changeConnectionColor(name, params, connectionKey);
+      });
 
       $u.contextMenu(line, {
         "Fill form with ...": () => { this.fillForm(params) },
@@ -144,6 +157,9 @@ class LoginScreen {
           this.submitCurrentForm();
         },
         'separator': 'separator',
+        "Change Color": () => {
+          this.changeConnectionColor(name, params, connectionKey);
+        },
         "Rename": () => {
           this.renameConnection(name);
         },
@@ -152,20 +168,84 @@ class LoginScreen {
         }
       });
 
-      // if (name == currentConnection) {
-      //   $u(line).addClass('selected');
-      //   this.connectionSelected(name, params, line);
-      // }
-
       $u(line).single_double_click_nowait((e) => {
-        this.connectionSelected(name);
+        if (!$u(e.target).hasClass('connection-color-dot')) {
+          this.connectionSelected(name);
+        }
       }, (e) => {
-        this.connectionSelected(name);
-        this.submitCurrentForm();
+        if (!$u(e.target).hasClass('connection-color-dot')) {
+          this.connectionSelected(name);
+          this.submitCurrentForm();
+        }
       });
 
       this.connections.append(line)
     });
+  }
+
+  getConnectionKey(params) {
+    if (params.type === 'url') {
+      const urlMatch = params.url ? params.url.match(/\/\/([^\/]+)/) : null;
+      return urlMatch ? urlMatch[1] : 'unknown';
+    } else {
+      return `${params.host || 'localhost'}:${params.port || '5432'}/${params.database || 'postgres'}`;
+    }
+  }
+
+  changeConnectionColor(name, params, connectionKey) {
+    const colors = [
+      '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+      '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52B788',
+      '#FF9FF3', '#54A0FF', '#FF6348', '#1DD1A1', '#FFC312'
+    ];
+
+    const currentColor = App.getConnectionColor(connectionKey);
+
+    let colorOptionsHtml = '';
+    colors.forEach(color => {
+      const selected = color === currentColor ? 'selected' : '';
+      colorOptionsHtml += `<div class="color-option ${selected}" data-color="${color}" style="background-color: ${color}"></div>`;
+    });
+
+    const dialogHtml = `
+      <div class="color-picker-dialog">
+        <p>Choose a color for this connection:</p>
+        <div class="color-grid">
+          ${colorOptionsHtml}
+        </div>
+      </div>
+    `;
+
+    window.alertify.alert(dialogHtml);
+
+    setTimeout(() => {
+      const alertifyContent = document.querySelector('.alertify');
+      if (!alertifyContent) return;
+
+      alertifyContent.querySelectorAll('.color-option').forEach(option => {
+        option.addEventListener('click', () => {
+          const newColor = option.getAttribute('data-color');
+
+          const colorMap = JSON.parse(window.localStorage.connectionColors || '{}');
+          colorMap[connectionKey] = newColor;
+          window.localStorage.connectionColors = JSON.stringify(colorMap);
+
+          this.connections.find(`[data-name='${name}'] .connection-color-dot`).css('background-color', newColor);
+
+          App.tabs.forEach(tab => {
+            if (tab.instance && tab.instance.type === 'db_screen' && tab.instance.connectionColor) {
+              const tabConnectionKey = this.getConnectionKey(tab.instance.connection.options);
+              if (tabConnectionKey === connectionKey) {
+                tab.instance.connectionColor = newColor;
+                tab.colorDotElement.css('background-color', newColor);
+              }
+            }
+          });
+
+          window.alertify.hide();
+        });
+      });
+    }, 100);
   }
 
   connectionSelected (name) {

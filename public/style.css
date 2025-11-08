@@ -181,18 +181,38 @@ input, textarea {
   color: #5c5b5b;
   margin-right: 0px;
   margin-bottom: 0px;
-  line-height: 26px;
+  line-height: 20px;
+  height: 22px;
   font-size: 12px;
-  padding: 1px 27px 1px 27px;
-  min-width: 90px;
+  padding: 1px 27px 1px 22px;
+  min-width: auto;
+  max-width: 200px;
   text-align: center;
   border-bottom: none;
   position: relative;
   border-right: 1px solid #d5d4d3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#tabs .tab .tab-color-dot {
+  position: absolute;
+  left: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ccc;
+}
+#tabs .tab .tab-text {
+  display: inline-block;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 #tabs .tab .tab-shortcut {
   position: absolute;
-  top: 5px;
+  top: 3px;
   right: 5px;
   font-size: 10px;
   color: #9b9b9b;
@@ -201,7 +221,7 @@ input, textarea {
 }
 #tabs .tab .close {
   position: absolute;
-  top: 5px;
+  top: 3px;
   left: 5px;
   text-decoration: none;
   vertical-align: top;
@@ -243,13 +263,15 @@ input, textarea {
 #tabs .tab:hover .tab-shortcut {
   display: none;
 }
+#tabs .tab:hover .tab-color-dot {
+  display: none;
+}
 #tabs .tab.active {
   color: #4A4A4A;
   background-color: #F4F3F2;
   position: relative;
   border-color: #d6d5d5;
   box-shadow: none;
-  padding-bottom: 0;
 }
 #tabs .tab.active:hover .close:hover {
   background-color: #dcdbdb;
@@ -275,6 +297,36 @@ input, textarea {
 
 .window-content.content .tab-message {
   padding: 20px;
+}
+
+.color-picker-dialog {
+  padding: 10px 0;
+}
+.color-picker-dialog p {
+  margin-bottom: 15px;
+  color: #333;
+}
+.color-picker-dialog .color-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  max-width: 300px;
+}
+.color-picker-dialog .color-grid .color-option {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 3px solid transparent;
+}
+.color-picker-dialog .color-grid .color-option:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.color-picker-dialog .color-grid .color-option.selected {
+  border-color: #333;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
 }
 
 #content {
@@ -541,6 +593,25 @@ input, textarea {
 .login-screen .sidebar ul > li.selected {
   background: #2065d9;
   color: white;
+}
+.login-screen .sidebar ul li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.login-screen .sidebar ul li .connection-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.login-screen .sidebar ul li .connection-color-dot:hover {
+  transform: scale(1.2);
+}
+.login-screen .sidebar ul li .connection-name {
+  flex: 1;
 }
 .login-screen .sidebar ul li[data-auto-connect=true]:after {
   content: "AUTO";
