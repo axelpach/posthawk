@@ -44,7 +44,7 @@ process.on('unhandledRejection', error => {
       }],
       npmRebuild: false, // because we changed dependency paths postgres manually
       icon: isWin ? "build_files/icon.ico" : __dirname + "/build_files/icon.icns",
-      productName: process.platform == 'linux' ? 'postbird' : 'Postbird',
+      productName: process.platform == 'linux' ? 'posthawk' : 'PostHawk',
       publish: null,
 
       mac: {
@@ -68,27 +68,27 @@ process.on('unhandledRejection', error => {
         target: ["deb", "rpm", "snap", "appImage", "pacman", "apk"],
         icon: __dirname + "/build_files/icon.png",
         mimeTypes: ["application/sql"],
-        description: "Postbird is a cross-platform PostgreSQL GUI client. Simple and efficient, with support of postgres specific features"
+        description: "PostHawk is a keyboard-first PostgreSQL GUI client. Fork of Postbird with enhanced keyboard navigation."
       },
       rpm: {
         depends: ["postgresql"],
         icon: __dirname + "/build_files/icon.png",
-        desktop: "Postbird",
-        synopsis: "PostgreSQL desktop client"
+        desktop: "PostHawk",
+        synopsis: "Keyboard-first PostgreSQL desktop client"
       },
       deb: {
         depends: [
           'gconf2', 'gconf-service', 'libnotify4', 'libappindicator1',
           'libxtst6', 'libnss3', 'libxss1', "postgresql-client"
         ],
-        synopsis: "PostgreSQL desktop client"
+        synopsis: "Keyboard-first PostgreSQL desktop client"
       },
       snap: {
         grade: "stable",
-        summary: "PostgreSQL desktop client"
+        summary: "Keyboard-first PostgreSQL desktop client"
       },
       appImage: {
-        synopsis: "PostgreSQL desktop client",
+        synopsis: "Keyboard-first PostgreSQL desktop client",
         category: "Development",
       },
       pacman: { },
