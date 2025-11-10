@@ -200,7 +200,7 @@ $(document).ready(function() {
       return false;
     }
 
-    if (isMod && isShift && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+    if (isMod && e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();

@@ -29,6 +29,7 @@ yarn start
 ```
 
 Build package:
+
 ```sh
 yarn dist
 ls ./dist
@@ -40,7 +41,7 @@ ls ./dist
 - `Cmd+T` - Open table switcher modal
 - `Cmd+N` - Duplicate current database connection in new tab
 - `Cmd+Shift+Up/Down` - Navigate between tables in sidebar
-- `Cmd+Shift+Left/Right` - Navigate between tabs (with wraparound)
+- `Cmd+Option+Left/Right` - Navigate between tabs (with wraparound)
 - Double-click cell - Copy cell content to clipboard
 
 ## Original Project
